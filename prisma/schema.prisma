@@ -1,0 +1,187 @@
+// Esquema de la invitacion digital de boda.
+// Las credenciales se cargan exclusivamente desde variables de entorno.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+}
+
+enum LocationType {
+  CEREMONY
+  RECEPTION
+  OTHER
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  role         Role      @default(ADMIN)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+/// Datos centrales del evento y textos editables de toda la invitacion.
+model Wedding {
+  id             String   @id @default(cuid())
+  partnerOne     String
+  partnerTwo     String
+  /// Fecha local del evento en formato YYYY-MM-DD
+  eventDate      String
+  /// Hora local del evento en formato HH:mm
+  eventTime      String
+  timezone       String   @default("America/Mexico_City")
+  /// Instante UTC calculado a partir de fecha, hora y zona horaria
+  weddingDate    DateTime
+  /// Textos editables (titulos, frases, botones, mensajes...)
+  content        Json
+  /// Visibilidad de secciones
+  sections       Json
+  introEnabled   Boolean  @default(true)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  theme        WeddingTheme?
+  locations    WeddingLocation[]
+  schedule     ScheduleItem[]
+  gallery      GalleryImage[]
+  giftRegistry GiftRegistry?
+  whatsapp     WhatsappConfig?
+  bankInfo     BankInfo?
+}
+
+model WeddingTheme {
+  id                 String  @id @default(cuid())
+  weddingId          String  @unique
+  palette            String  @default("olivo")
+  colorBackground    String
+  colorSurface       String
+  colorPrimary       String
+  colorSecondary     String
+  colorAccent        String
+  colorText          String
+  colorMuted         String
+  colorButton        String
+  colorButtonText    String
+  colorLine          String
+  heroOverlay        String
+  heroOverlayOpacity Float   @default(0.45)
+  fontHeading        String  @default("Cormorant Garamond")
+  fontBody           String  @default("Manrope")
+  updatedAt          DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+}
+
+model WeddingLocation {
+  id          String       @id @default(cuid())
+  weddingId   String
+  type        LocationType @default(OTHER)
+  label       String
+  name        String
+  address     String       @default("")
+  date        String       @default("")
+  time        String       @default("")
+  description String       @default("")
+  mapUrl      String       @default("")
+  buttonText  String       @default("Ver ubicación")
+  isVisible   Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  @@index([weddingId, sortOrder])
+}
+
+model ScheduleItem {
+  id          String   @id @default(cuid())
+  weddingId   String
+  title       String
+  time        String
+  description String   @default("")
+  icon        String   @default("sparkles")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  @@index([weddingId, sortOrder])
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  weddingId String
+  publicId  String   @unique
+  secureUrl String
+  width     Int      @default(0)
+  height    Int      @default(0)
+  alt       String   @default("")
+  sortOrder Int      @default(0)
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+
+  @@index([weddingId, sortOrder])
+}
+
+model GiftRegistry {
+  id          String  @id @default(cuid())
+  weddingId   String  @unique
+  enabled     Boolean @default(true)
+  title       String
+  description String  @default("")
+  url         String  @default("")
+  buttonText  String  @default("Ver mesa de regalos")
+  updatedAt   DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+}
+
+model WhatsappConfig {
+  id          String  @id @default(cuid())
+  weddingId   String  @unique
+  enabled     Boolean @default(true)
+  countryCode String  @default("52")
+  phone       String  @default("")
+  message     String
+  buttonText  String  @default("Confirmar asistencia")
+  title       String
+  description String  @default("")
+  deadline    String  @default("")
+  updatedAt   DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+}
+
+model BankInfo {
+  id            String  @id @default(cuid())
+  weddingId     String  @unique
+  enabled       Boolean @default(false)
+  title         String
+  description   String  @default("")
+  bankName      String  @default("")
+  beneficiary   String  @default("")
+  accountNumber String  @default("")
+  clabe         String  @default("")
+  cardNumber    String  @default("")
+  updatedAt     DateTime @updatedAt
+
+  wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+}
