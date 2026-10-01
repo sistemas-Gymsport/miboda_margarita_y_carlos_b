@@ -7,7 +7,10 @@ function ensureConfigured() {
   if (!isCloudinaryConfigured) throw new HttpError(503, 'El servicio de imagenes no esta configurado');
 }
 
-/** Sube un buffer a Cloudinary limitando la resolucion original para no almacenar archivos enormes. */
+/**
+ * Sube un buffer a Cloudinary conservando el archivo original (tamano y proporcion).
+ * La optimizacion ocurre al entregarla (f_auto, q_auto y ancho segun pantalla).
+ */
 function uploadImage(buffer, { folder = 'gallery' } = {}) {
   ensureConfigured();
   return new Promise((resolve, reject) => {
@@ -16,7 +19,6 @@ function uploadImage(buffer, { folder = 'gallery' } = {}) {
         folder: `${env.CLOUDINARY_FOLDER}/${folder}`,
         resource_type: 'image',
         allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-        transformation: [{ width: 2400, height: 2400, crop: 'limit', quality: 'auto:good' }],
         overwrite: false,
       },
       (error, result) => {
