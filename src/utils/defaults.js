@@ -9,8 +9,10 @@ const DEFAULT_CONTENT = {
   introButton: 'Abrir invitación',
 
   // Hero
-  heroEyebrow: 'Nos casamos',
-  heroSubtitle: 'Y queremos que seas parte de este día',
+  heroEyebrow: 'Nuestra Boda',
+  heroSubtitle: 'Este día muy especial estaremos junto a nuestros seres queridos.',
+  heroConfirmText: 'Confirma tu asistencia al:',
+  heroClosing: 'Te esperamos',
   heroDateText: '',
   heroScrollHint: 'Desliza',
 
@@ -79,6 +81,19 @@ const DEFAULT_SECTIONS = {
 };
 
 const PALETTES = {
+  dorado: {
+    colorBackground: '#FDFBF6',
+    colorSurface: '#F8F3E8',
+    colorPrimary: '#6B5222',
+    colorSecondary: '#A88B52',
+    colorAccent: '#C29A3F',
+    colorText: '#4A3B22',
+    colorMuted: '#7D6B4F',
+    colorButton: '#B08A3E',
+    colorButtonText: '#FFFFFF',
+    colorLine: '#D9C38F',
+    heroOverlay: '#3A2E18',
+  },
   olivo: {
     colorBackground: '#F7F5EF',
     colorSurface: '#EEEBE1',
@@ -160,11 +175,11 @@ const PALETTES = {
 };
 
 const DEFAULT_THEME = {
-  palette: 'olivo',
-  ...PALETTES.olivo,
+  palette: 'dorado',
+  ...PALETTES.dorado,
   heroOverlayOpacity: 0.45,
   fontHeading: 'Cormorant Garamond',
-  fontBody: 'Manrope',
+  fontBody: 'Montserrat',
 };
 
 const HEADING_FONTS = ['Cormorant Garamond', 'Playfair Display', 'Bodoni Moda', 'Cinzel', 'DM Serif Display'];

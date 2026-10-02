@@ -62,6 +62,7 @@ const whatsappSchema = {
   enabled: rules.boolean(),
   countryCode: rules.digits(4),
   phone: rules.digits(15),
+  phoneSecondary: rules.digits(15),
   message: rules.text(500),
   buttonText: rules.string(60),
   title: rules.string(120),

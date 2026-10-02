@@ -18,7 +18,7 @@ function serializeImage(image) {
 const LOCATION_KEYS = ['id', 'type', 'label', 'name', 'address', 'date', 'time', 'description', 'mapUrl', 'buttonText', 'isVisible', 'sortOrder'];
 const SCHEDULE_KEYS = ['id', 'title', 'time', 'description', 'icon', 'sortOrder'];
 const GIFT_KEYS = ['enabled', 'title', 'description', 'url', 'buttonText'];
-const WHATSAPP_KEYS = ['enabled', 'countryCode', 'phone', 'message', 'buttonText', 'title', 'description', 'deadline'];
+const WHATSAPP_KEYS = ['enabled', 'countryCode', 'phone', 'phoneSecondary', 'message', 'buttonText', 'title', 'description', 'deadline'];
 const BANK_KEYS = ['enabled', 'title', 'description', 'bankName', 'beneficiary', 'accountNumber', 'clabe', 'cardNumber'];
 
 /**

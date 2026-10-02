@@ -65,7 +65,7 @@ model Wedding {
 model WeddingTheme {
   id                 String  @id @default(cuid())
   weddingId          String  @unique
-  palette            String  @default("olivo")
+  palette            String  @default("dorado")
   colorBackground    String
   colorSurface       String
   colorPrimary       String
@@ -79,7 +79,7 @@ model WeddingTheme {
   heroOverlay        String
   heroOverlayOpacity Float   @default(0.45)
   fontHeading        String  @default("Cormorant Garamond")
-  fontBody           String  @default("Manrope")
+  fontBody           String  @default("Montserrat")
   updatedAt          DateTime @updatedAt
 
   wedding Wedding @relation(fields: [weddingId], references: [id], onDelete: Cascade)
@@ -160,6 +160,8 @@ model WhatsappConfig {
   enabled     Boolean @default(true)
   countryCode String  @default("52")
   phone       String  @default("")
+  /// Telefono adicional opcional (solo se muestra en la portada)
+  phoneSecondary String @default("")
   message     String
   buttonText  String  @default("Confirmar asistencia")
   title       String
