@@ -1,3 +1,4 @@
+const prisma = require('../config/prisma');
 const { getCachedInvitation } = require('../services/cacheService');
 const { buildInvitation } = require('../services/invitationService');
 
@@ -21,4 +22,17 @@ function health(req, res) {
   res.json({ ok: true });
 }
 
-module.exports = { getInvitation, health };
+/**
+ * GET /api/warm — para el monitor externo que mantiene el servicio despierto.
+ * A diferencia de /health, toca la base de datos (Neon tambien se suspende) y deja
+ * la invitacion lista en cache para el siguiente invitado.
+ */
+async function warm(req, res) {
+  const started = Date.now();
+  await prisma.$queryRaw`SELECT 1`;
+  await getCachedInvitation(() => buildInvitation());
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, ms: Date.now() - started });
+}
+
+module.exports = { getInvitation, health, warm };

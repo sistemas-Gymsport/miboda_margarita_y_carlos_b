@@ -9,6 +9,8 @@ const router = Router();
 
 // Salud: no consulta la base de datos y responde de inmediato.
 router.get('/health', publicController.health);
+// Mantener despiertos servidor y base de datos (usado por el monitor externo).
+router.get('/warm', publicController.warm);
 
 // Publico
 router.get('/public/invitation', publicController.getInvitation);

@@ -1,7 +1,12 @@
 const crypto = require('crypto');
 const logger = require('../utils/logger');
 
-/** Cache en memoria de la invitacion publica (cambia pocas veces). */
+/**
+ * Cache en memoria de la invitacion publica (cambia pocas veces).
+ * Estrategia stale-while-revalidate: cuando la copia vence se sigue entregando al instante
+ * y se reconstruye en segundo plano, asi ningun visitante espera a la base de datos.
+ * Los cambios del panel invalidan la copia y la siguiente visita obtiene la version nueva.
+ */
 const TTL_MS = 5 * 60 * 1000;
 let entry = null;
 let pending = null;
@@ -11,8 +16,7 @@ function createEtag(body) {
   return `W/"${crypto.createHash('sha1').update(body).digest('base64url')}"`;
 }
 
-async function getCachedInvitation(builder) {
-  if (entry && Date.now() - entry.createdAt < TTL_MS) return entry;
+function rebuild(builder) {
   // Evita construir la misma respuesta varias veces en paralelo (cold start).
   if (!pending) {
     const buildVersion = version;
@@ -28,6 +32,14 @@ async function getCachedInvitation(builder) {
     });
   }
   return pending;
+}
+
+async function getCachedInvitation(builder) {
+  if (!entry) return rebuild(builder);
+  if (Date.now() - entry.createdAt >= TTL_MS) {
+    rebuild(builder).catch((err) => logger.error('Cache', `No se pudo actualizar la invitacion: ${err.message}`));
+  }
+  return entry;
 }
 
 function invalidateInvitationCache() {

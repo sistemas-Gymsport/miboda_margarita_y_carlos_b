@@ -2,16 +2,21 @@ const env = require('./config/env');
 const app = require('./app');
 const prisma = require('./config/prisma');
 const logger = require('./utils/logger');
+const { getCachedInvitation } = require('./services/cacheService');
+const { buildInvitation } = require('./services/invitationService');
 
 const server = app.listen(env.PORT, () => {
   logger.info('Server', `API escuchando en el puerto ${env.PORT} (${env.NODE_ENV})`);
   logger.info('Server', `Origenes permitidos: ${env.FRONTEND_URLS.join(', ')}`);
 
   // Calienta la conexion a la base de datos sin bloquear el arranque ni /api/health.
+  // Despues deja la invitacion en cache para que el primer visitante no espere la consulta.
   prisma
     .$connect()
     .then(() => logger.info('Prisma', 'Conexion a PostgreSQL lista'))
-    .catch((err) => logger.error('Prisma', `No se pudo conectar a PostgreSQL: ${err.message}`));
+    .then(() => getCachedInvitation(() => buildInvitation()))
+    .then(() => logger.info('Cache', 'Invitacion precargada'))
+    .catch((err) => logger.error('Prisma', `No se pudo preparar la invitacion: ${err.message}`));
 });
 
 async function shutdown(signal) {
