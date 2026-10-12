@@ -52,8 +52,6 @@ const DEFAULT_CONTENT = {
   dressCodeDescription:
     'Queremos verte lucir espectacular. Te sugerimos vestimenta formal en tonos neutros y elegantes.',
   dressCodeNote: 'Reservamos el color blanco para la novia.',
-  dressCodeWomen: 'Vestido largo o de coctel',
-  dressCodeMen: 'Traje y corbata',
 
   // Footer / mensaje final
   closingEyebrow: 'Con todo nuestro amor',
